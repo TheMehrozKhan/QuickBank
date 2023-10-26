@@ -1,5 +1,6 @@
 ﻿using BankCrudOperationsApp.Data;
 using BankCrudOperationsApp.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankCrudOperationsApp.Controllers
@@ -30,10 +31,35 @@ namespace BankCrudOperationsApp.Controllers
             {
                 _context.Users.Add(theusers);
                 _context.SaveChanges();
-                TempData["ResultOk"] = "Record Added Successfully !";
+                TempData["ResultOk"] = "Account Created Successfully!";
                 return RedirectToAction("Index");
             }
             return View(theusers);
+        }
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(User objUser)
+        {
+            
+                var obj = _context.Users.Where(a => a.Email.Equals(objUser.Email) && a.Password.Equals(objUser.Password)).FirstOrDefault();
+                if (obj != null)
+                {
+                    HttpContext.Session.SetString("UserID", obj.UserId.ToString());
+                    HttpContext.Session.SetString("UserEmail", obj.Email.ToString());
+                    return RedirectToAction("UserDashBoard");
+                }
+            return View(objUser);
+        }
+
+        public ActionResult UserDashBoard()
+        {   
+            return RedirectToAction("Login");
         }
     }
 }
