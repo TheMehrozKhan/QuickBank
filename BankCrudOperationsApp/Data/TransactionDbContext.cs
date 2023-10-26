@@ -9,5 +9,6 @@ namespace BankCrudOperationsApp.Data
         {
         }
         public DbSet <BankTransactions> Transactions  { get; set; }
+        public DbSet <User> Users { get; set; }    
     }
 }
