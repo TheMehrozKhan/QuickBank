@@ -1,1 +1,15 @@
-﻿
+﻿<script>
+    function showToast(message, type) {
+        Swal.fire({
+            icon: type, // 'success', 'error', 'info', etc.
+            title: message,
+            showConfirmButton: false,
+            timer: 2000 // You can adjust the time the toast is shown
+        });
+    }
+
+    @if (TempData["ResultOk"] != null)
+    {
+        <text>showToast("@TempData["ResultOk"]", "success"); </text>
+    }
+</script>

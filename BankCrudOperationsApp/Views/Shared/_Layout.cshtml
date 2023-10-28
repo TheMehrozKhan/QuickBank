@@ -6,6 +6,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
 <body>
     <div class="min-h-full">
@@ -28,17 +30,30 @@
                     <div class="hidden md:block">
                         <div class="ml-4 flex items-center md:ml-6">
                             <div class="relative ml-3">
-                                <div>
-                                    <button type="button" class="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                        <span class="absolute -inset-1.5"></span>
-                                        <span class="sr-only">Open user menu</span>
-                                        <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                                    </button>
-                                </div>
+                                @if (Context.Session.GetString("UserEmail") != null)
+                                {
+                                    <div>
+                                        @if (!string.IsNullOrEmpty(Model?.ProfilePhoto))
+                                        {
+                                            <a asp-controller="Bank" asp-action="Logout">
+                                                <img class="h-8 w-8 rounded-full" src="@Url.Content(Model.ProfilePhoto)" alt="User Profile">
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Bank" asp-action="Logout">
+                                                <img class="h-8 w-8 rounded-full" src="~/lib/Images/DefaultProfile.png" alt="Default Profile">
+                                            </a>
+                                        }
+                                    </div>
+                                }
                             </div>
                             <div class="hidden md:block">
-                                <a href="#" class="bg-gray-700 text-white rounded-md px-3 py-2 text-sm font-medium">SignUp</a>
-                                <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Login</a>
+                                @if (Context.Session.GetString("UserEmail") == null)
+                                {
+                                    <a asp-controller="Bank" asp-action="Signup" class="bg-gray-700 text-white rounded-md px-3 py-2 text-sm font-medium">SignUp</a>
+                                    <a asp-controller="Bank" asp-action="Login" class="text-gray-300 hover-bg-gray-700 hover-text-white rounded-md px-3 py-2 text-sm font-medium">Login</a>
+                                }
                             </div>
                         </div>
                     </div>
@@ -59,7 +74,31 @@
         </nav>
     </div>
     @RenderBody()
-    <footer class="bg-white dark:bg-gray-900">
+    <div class="max-w-2xl mx-auto" style="margin-top:20px;">
+        <footer class="p-4 rounded-lg shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800">
+            <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+                © 2022 <a href="https://flowbite.com" class="hover:underline" target="_blank">Flowbite™</a>. All Rights Reserved.
+            </span>
+            <ul class="flex flex-wrap items-center mt-3 sm:mt-0">
+                <li>
+                    <a href="#" class="mr-4 text-sm text-gray-500 hover:underline md:mr-6 dark:text-gray-400">About</a>
+                </li>
+                <li>
+                    <a href="#" class="mr-4 text-sm text-gray-500 hover:underline md:mr-6 dark:text-gray-400">
+                        Privacy
+                        Policy
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="mr-4 text-sm text-gray-500 hover:underline md:mr-6 dark:text-gray-400">Licensing</a>
+                </li>
+                <li>
+                    <a href="#" class="text-sm text-gray-500 hover:underline dark:text-gray-400">Contact</a>
+                </li>
+            </ul>
+        </footer>
+    </div>
+@*     <footer class="bg-white dark:bg-gray-900">
         <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
             <div class="lg:flex lg:items-start lg:gap-8">
                 <div class="mt-8 grid grid-cols-2 gap-8 lg:mt-0 lg:grid-cols-5 lg:gap-y-16">
@@ -365,7 +404,7 @@
                 </div>
             </div>
         </div>
-    </footer>
+    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,6 +1,5 @@
 ﻿using BankCrudOperationsApp.Data;
 using BankCrudOperationsApp.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankCrudOperationsApp.Controllers
@@ -31,8 +30,7 @@ namespace BankCrudOperationsApp.Controllers
             {
                 _context.Users.Add(theusers);
                 _context.SaveChanges();
-                TempData["ResultOk"] = "Account Created Successfully!";
-                return RedirectToAction("Index");
+                return RedirectToAction("SuccessMessageSignup");
             }
             return View(theusers);
         }
@@ -46,19 +44,35 @@ namespace BankCrudOperationsApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(User objUser)
         {
-            
-                var obj = _context.Users.Where(a => a.Email.Equals(objUser.Email) && a.Password.Equals(objUser.Password)).FirstOrDefault();
-                if (obj != null)
-                {
-                    HttpContext.Session.SetString("UserID", obj.UserId.ToString());
-                    HttpContext.Session.SetString("UserEmail", obj.Email.ToString());
-                    return RedirectToAction("UserDashBoard");
-                }
-            return View(objUser);
+            var obj = _context.Users.Where(a => a.Email.Equals(objUser.Email) && a.Password.Equals(objUser.Password)).FirstOrDefault();
+
+            if (obj != null)
+            {
+                HttpContext.Session.SetString("UserID", obj.UserId.ToString());
+                HttpContext.Session.SetString("UserEmail", obj.Email.ToString());
+                TempData["ResultOk"] = obj.FirstName + " You logged in successfully"; 
+                return RedirectToAction("UserDashBoard");
+            }
+            else
+            {
+                TempData["ResultError"] = "Incorrect Email or Password";
+                return View();
+            }
+        }
+
+        public ActionResult SuccessMessageSignup()
+        {
+            return View();
         }
 
         public ActionResult UserDashBoard()
         {   
+            return View();
+        }
+
+        public ActionResult Logout()
+        {
+            HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
     }

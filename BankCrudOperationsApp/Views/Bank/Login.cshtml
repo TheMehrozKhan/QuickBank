@@ -30,6 +30,21 @@
         </div>
     </div>
 </section>
+<script>
+    function showToast(message, type) {
+        Swal.fire({
+            icon: type, 
+            title: message,
+            showConfirmButton: false,
+            timer: 1750 
+        });
+    }
+
+    @if (TempData["ResultError"] != null)
+    {
+        <text>showToast("@TempData["ResultError"]", "error"); </text>
+    }
+</script>
 @section Scripts{
     @{
         <partial name="_ValidationScriptsPartial" />
