@@ -1,6 +1,7 @@
 ﻿using BankCrudOperationsApp.Data;
 using BankCrudOperationsApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankCrudOperationsApp.Controllers
 {
@@ -26,14 +27,25 @@ namespace BankCrudOperationsApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Signup(User theusers)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Users.Add(theusers);
-                _context.SaveChanges();
-                return RedirectToAction("SuccessMessageSignup");
+                if (ModelState.IsValid)
+                {
+                    _context.Users.Add(theusers);
+                    _context.SaveChanges();
+                    TempData["ResultOk"] = "Record Added Successfully!";
+                    return RedirectToAction("SuccessMessageSignup");
+                }
+                return View(theusers);
             }
-            return View(theusers);
+            catch (DbUpdateException)
+            {
+                TempData["ResultError"] = "An error occurred while saving your data.";
+                return View(theusers);
+            }
         }
+
+
         [HttpGet]
         public ActionResult Login()
         {

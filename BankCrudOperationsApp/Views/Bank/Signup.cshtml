@@ -1,48 +1,70 @@
 ﻿@model User
-
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <title>Create Your Account - QuickBank</title>
 </head>
-<section class="bg-gray-50 dark:bg-gray-900" style="padding:80px;">
+<style>
+    .password-input {
+        position: relative;
+    }
+
+    #toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 23px;
+        color: dodgerblue;
+    }
+</style>
+<section style="padding:140px;">
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                     Create Your Account
                 </h1>
+                @if (TempData["ResultError"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["ResultError"]
+                    </div>
+                }
                 <form class="space-y-4 md:space-y-6" method="post">
                     <div>
                         <label asp-for="FirstName" for="firstname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First Name</label>
-                        <input asp-for="FirstName" type="text" name="firstname" id="firstname" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
+                        <input asp-for="FirstName" type="text" name="firstname" id="firstname" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Mehroz" required="">
                         <span asp-validation-for="FirstName" class=" alert-danger"></span>
                     </div>
                     <div>
                         <label asp-for="LastName" for="lastname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
-                        <input asp-for="LastName" type="text" name="lastname" id="lastname" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
+                        <input asp-for="LastName" type="text" name="lastname" id="lastname" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Khan" required="">
                         <span asp-validation-for="LastName" class=" alert-danger"></span>
                     </div>
                     <div>
                         <label asp-for="Email" for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                        <input asp-for="Email" type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
+                        <input asp-for="Email" type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="mehroz@gmail.com" required="">
                         <span asp-validation-for="Email" class=" alert-danger"></span>
                     </div>
                     <div>
                         <label asp-for="Password" for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                        <input asp-for="Password" type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
-                        <span asp-validation-for="Password" class=" alert-danger"></span>
+                        <div class="relative">
+                            <input asp-for="Password" type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                            <button type="button" id="toggle-password"><i class="ri-eye-line"></i></button>
+                            <span asp-validation-for="Password" class="alert-danger"></span>
+                        </div>
+                        <div id="password-strength" class="rounded-md p-2 mt-2 text-center" style="background-color: dodgerblue; color: white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;">
+                            Password Strength: <span id="strength-score">0</span>/4
+                        </div>
                     </div>
                     <div>
                         <label asp-for="Password" for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
-                        <input asp-for="Password" type="confirm-password" name="confirm-password" id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                        <input asp-for="Password" type="password" name="confirm-password" id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
                         <span asp-validation-for="Password" class=" alert-danger"></span>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="flex items-center h-5">
-                            <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">
-                        </div>
-                        <div class="ml-3 text-sm">
-                            <label for="terms" class="font-light text-gray-500 dark:text-gray-300">I accept the <a class="font-medium hover:underline dark:text-primary-500" href="#" style="color:black">Terms and Conditions</a></label>
-                        </div>
                     </div>
                     <button type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
                     <p class="text-sm font-light text-gray-500 dark:text-gray-400">
@@ -53,6 +75,78 @@
         </div>
     </div>
 </section>
+<script>
+    function showErrorAlert(message) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: message,
+        });
+    }
+
+    function updatePasswordStrength() {
+        const password = document.querySelector("#password").value;
+        const result = zxcvbn(password);
+
+        const strengthMeter = document.querySelector("#password-strength");
+        strengthMeter.textContent = `Password Strength: ${result.score}/4`;
+    }
+
+    document.querySelector("#password").addEventListener("input", updatePasswordStrength);
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const firstName = document.querySelector("#firstname").value;
+        const lastName = document.querySelector("#lastname").value;
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+
+        if (firstName.trim() === "") {
+            showErrorAlert("First Name is required.");
+            return;
+        }
+
+        if (lastName.trim() === "") {
+            showErrorAlert("Last Name is required.");
+            return;
+        }
+
+        if (email.trim() === "") {
+            showErrorAlert("Email is required.");
+            return;
+        }
+
+        if (password.trim() === "") {
+            showErrorAlert("Password is required.");
+            return;
+        }
+
+        if (password !== document.querySelector("#confirm-password").value) {
+            showErrorAlert("Passwords do not match.");
+            return;
+        }
+
+        this.submit();
+    });
+
+    function togglePassword() {
+        var passwordInput = document.getElementById("password");
+        var toggleButton = document.getElementById("toggle-password");
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleButton.innerHTML = '<i class="ri-eye-line"></i>';
+        } else {
+            passwordInput.type = "password";
+            toggleButton.innerHTML = '<i class="ri-eye-off-line"></i>';
+        }
+    }
+
+    // Add click event listener to the toggle button
+    document.getElementById("toggle-password").addEventListener("click", togglePassword);
+</script>
+
 @section Scripts{
     @{
         <partial name="_ValidationScriptsPartial" />
